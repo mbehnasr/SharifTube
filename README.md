@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+Create .env.local and add required environment variables:
+```env
+MONGO_URI=mongodb://localhost:27017/stube
+NEXTAUTH_SECRET={A_LONG_SECRET}
+```
+
+Run the development server:
 
 ```bash
 npm run dev
