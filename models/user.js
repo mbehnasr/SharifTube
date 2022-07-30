@@ -10,6 +10,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'password can not be empty.'],
     },
+    roles: {
+        type: [String],
+        default: ['user'],
+    }
 })
 
 export default mongoose.models.User || mongoose.model('User', UserSchema)

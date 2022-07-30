@@ -23,8 +23,16 @@ export default NextAuth({
         })
     ],
     callbacks: {
+        async jwt({token, user}) {
+            if (user) {
+                token.username = user.username;
+                token.roles = user.roles;
+            }
+            return token;
+        },
         async session({session, token}) {
-            session.user.id = token.sub;
+            session.username = token.username;
+            session.roles = token.roles;
             return session;
         }
     }
