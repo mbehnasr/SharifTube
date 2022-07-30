@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import {signIn} from "next-auth/react";
 
 export default function Home() {
   return (
@@ -39,6 +40,10 @@ export default function Home() {
             <h2>Examples &rarr;</h2>
             <p>Discover and deploy boilerplate example Next.js projects.</p>
           </a>
+
+          <button onClick={() => signIn('user-password', {redirect: false, username: 'mahdi', password: 'ftydjn6n'})} >
+            login as mahdi
+          </button>
 
           <a
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"

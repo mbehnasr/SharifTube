@@ -1,5 +1,12 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import nc from 'next-connect';
+import {authMiddleware} from "../../lib/auth";
 
-export default function handler(req, res) {
-  res.status(200).json({ name: 'John Doe' })
-}
+const handler = nc()
+.use(authMiddleware())
+.get(async (req, res) => {
+    res.status(200).json({
+        message: "Hello world"
+    })
+});
+
+export default handler;
