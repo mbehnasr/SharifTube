@@ -28,7 +28,13 @@ const VideoSchema = new mongoose.Schema({
     file: {
         type: String,
     },
+    posterFile: {
+        type: String,
+    },
     extension: {
+        type: String,
+    },
+    posterExtension: {
         type: String,
     },
     createdAt: {
@@ -46,5 +52,14 @@ const VideoSchema = new mongoose.Schema({
         default: [],
     },
 })
+
+VideoSchema.methods = {
+    getFullFileName() {
+        return `${this._id}.${this.extension}`
+    },
+    getFullPosterName() {
+        return `${this._id}.${this.posterExtension}`
+    }
+}
 
 export default mongoose.models.Video || mongoose.model('Video', VideoSchema);

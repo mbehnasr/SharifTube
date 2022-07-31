@@ -4,24 +4,53 @@ import fs from "fs";
 import Video from "../../../../models/video";
 import getVideoDurationInSeconds from "get-video-duration";
 import {connectDBMiddleware} from "../../../../lib/db";
+import {BadRequestError, NotFoundError, onError} from "../../../../lib/error";
+import {getVideoPath} from "../../../../utils/path";
 
-const handler = nc()
+const CHUNK_SIZE = 2 ** 20 - 1;
+
+const handler = nc({onError})
     .use(connectDBMiddleware)
-    .use(multer().single("poster"))
-    .put(async (req, res) => {
+    .get(async (req, res) => {
+        const range = req.headers.range;
+        if (!range) throw new BadRequestError("no range specified")
+
+        const video = await Video.findById(req.query.uid)
+        if (!video) throw new NotFoundError("no video found")
+
+        const videoPath = getVideoPath(video)
+        const fileSize = fs.statSync(videoPath).size;
+        const start = parseInt(range.replace(/bytes=/, "").split('-')[0], 10);
+        const end = Math.min(start + CHUNK_SIZE, fileSize - 1);
+        const stream = fs.createReadStream(videoPath, {start, end});
+        res.writeHead(206, {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': end-start+1,
+            'Content-Type': `video/${video.extension}`,
+        });
+        stream.pipe(res);
+    })
+    .put(multer().single("poster"), async (req, res) => {
         const video = await Video.findById(req.query.uid);
         const fileExt = req.file.originalname.split('.').pop()
         const filePath = `${process.cwd()}/public/posters/${req.query.uid}.${fileExt}`;
         const stream = fs.createWriteStream(filePath);
+
         stream.write(req.file.buffer);
+
         video.title = req.body.title;
         video.description = req.body.description;
-        video.save()
+        video.posterFile = req.file.originalname;
+        video.posterExtension = fileExt;
+        await video.save();
+
         getVideoDurationInSeconds(`${process.cwd()}/public/uploads/${video._id.toString()}.${video.extension}`)
             .then(duration => {
                 video.duration = Math.round(duration);
                 video.save();
             });
+
         res.status(200).json({
             uid: req.query.uid,
         });

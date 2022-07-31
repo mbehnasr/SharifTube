@@ -13,7 +13,7 @@ export default function Home() {
       const formData = new FormData();
           formData.append("poster", data.file[0]);
       formData.append("hello", "baby")
-        axios.post("http://localhost:3000/api/videos/62e63ce69b22a6b13e2cac41", formData, {})
+        axios.post("http://localhost:3000/api/videos/62e6bee45de24df96cecefae", formData, {})
     }
   return (
     <div className={styles.container}>
@@ -27,6 +27,10 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <video width="320" height="240" controls>
+            <source src="http://localhost:3000/api/videos/62e6bee45de24df96cecefae" />
+        </video>
 
         <form onSubmit={handleSubmit(onSubmit)}>
             <input name="file" type="file" {...register('file')} />
