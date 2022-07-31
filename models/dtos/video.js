@@ -10,5 +10,6 @@ export function videoFullDto(video, user) {
         },
         likes: video.likes.length,
         liked: Boolean(user) && video.likes.includes(user._id),
+        duration: video.duration,
     }
 }

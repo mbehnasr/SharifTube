@@ -1,12 +1,9 @@
 import nc from "next-connect";
-import multer from "multer";
 import fs from "fs";
 import Video from "../../../../models/video";
-import getVideoDurationInSeconds from "get-video-duration";
 import {connectDBMiddleware} from "../../../../lib/db";
-import {BadRequestError, NotFoundError, onError, ForbiddenError} from "../../../../lib/error";
-import {getPosterPath, getVideoPath} from "../../../../utils/path";
-import {authMiddleware} from "../../../../lib/auth";
+import {BadRequestError, NotFoundError, onError} from "../../../../lib/error";
+import {getVideoPath} from "../../../../utils/path";
 
 const CHUNK_SIZE = 2 ** 20 - 1;
 
@@ -31,42 +28,6 @@ const handler = nc({onError})
             'Content-Type': `video/${video.extension}`,
         });
         stream.pipe(res);
-    })
-    .put(authMiddleware('user'), multer().single("poster"), async (req, res) => {
-        const video = await Video.findById(req.query.uid);
-
-        if (!video) throw new NotFoundError("no video found")
-        if (!video.user._id.equals(req.user._id)) throw new ForbiddenError("you are not permitted to edit this video")
-        
-        const fileExt = req.file.originalname.split('.').pop()
-
-        video.title = req.body.title;
-        video.description = req.body.description;
-        video.posterFile = req.file.originalname;
-        video.posterExtension = fileExt;
-
-        const filePath = getPosterPath(video);
-        const stream = fs.createWriteStream(filePath);
-
-        stream.write(req.file.buffer);
-
-        await video.save();
-
-        getVideoDurationInSeconds(`${process.cwd()}/public/uploads/${video._id.toString()}.${video.extension}`)
-            .then(duration => {
-                video.duration = Math.round(duration);
-                video.save();
-            });
-
-        res.status(200).json({
-            uid: req.query.uid,
-        });
     });
-
-export const config = {
-    api: {
-        bodyParser: false,
-    }
-}
 
 export default handler;
