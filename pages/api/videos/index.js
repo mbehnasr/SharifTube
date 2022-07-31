@@ -11,25 +11,29 @@ const handler = nc()
     .use(authMiddleware('user'))
     .post(async (req, res) => {
         const bb = busboy({headers: req.headers});
+        let newVideo;
         bb.on("file", async (_, file, info) => {
-            const newVideo = await Video.create({
+            const fileExt = info.filename.split('.').pop()
+            newVideo = await Video.create({
                 file: info.filename,
                 user: {
                     _id: Types.ObjectId(req.user._id),
                     username: req.user.username,
                 },
+                extension: fileExt,
             })
-            const fileExt = info.filename.split('.').pop()
             const filePath = `${process.cwd()}/public/uploads/${newVideo._id}.${fileExt}`;
             const stream = fs.createWriteStream(filePath);
             file.pipe(stream);
         });
         bb.on("close", () => {
-            res.writeHead(204, { Connection: "close" });
-            res.end();
+            res.writeHead(200, { Connection: "close", "Content-Type": "application/json" });
+            res.end(JSON.stringify({
+                uid: newVideo._id,
+            }));
         });
         return req.pipe(bb);
-    })
+    });
 
 export default handler;
 

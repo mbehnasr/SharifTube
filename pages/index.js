@@ -2,8 +2,19 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {signIn} from "next-auth/react";
+import {useForm} from "react-hook-form";
+import axios from "axios";
 
 export default function Home() {
+  const {register, handleSubmit, errors} = useForm();
+    const onSubmit = data => {
+        console.log("submitting");
+        console.log(data.file[0])
+      const formData = new FormData();
+          formData.append("poster", data.file[0]);
+      formData.append("hello", "baby")
+        axios.post("http://localhost:3000/api/videos/62e63ce69b22a6b13e2cac41", formData, {})
+    }
   return (
     <div className={styles.container}>
       <Head>
@@ -16,6 +27,11 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <input name="file" type="file" {...register('file')} />
+          <button type="submit">Submit</button>
+        </form>
 
         <p className={styles.description}>
           Get started by editing{' '}

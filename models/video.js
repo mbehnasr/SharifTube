@@ -28,6 +28,9 @@ const VideoSchema = new mongoose.Schema({
     file: {
         type: String,
     },
+    extension: {
+        type: String,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -35,10 +38,13 @@ const VideoSchema = new mongoose.Schema({
     user: {
         type: UserSchema,
     },
+    duration: {
+        type: Number,
+    },
     comments: {
         type: [CommentSchema],
         default: [],
-    }
+    },
 })
 
 export default mongoose.models.Video || mongoose.model('Video', VideoSchema);

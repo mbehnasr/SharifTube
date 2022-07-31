@@ -30,3 +30,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# static files
+/public/uploads/*
+!/public/uploads/.gitkeep
+/public/posters/*
+!/public/posters/.gitkeep
