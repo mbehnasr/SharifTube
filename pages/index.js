@@ -4,8 +4,10 @@ import styles from '../styles/Home.module.css'
 import {signIn} from "next-auth/react";
 import {useForm} from "react-hook-form";
 import axios from "axios";
+import {VideoPlayer} from "../components/video";
 
 export default function Home() {
+  const videoUid= "62e6bee45de24df96cecefae"
   const {register, handleSubmit, errors} = useForm();
     const onSubmit = data => {
         console.log("submitting");
@@ -28,9 +30,7 @@ export default function Home() {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
-        <video width="320" height="240" controls>
-            <source src="http://localhost:3000/api/videos/62e6bee45de24df96cecefae" />
-        </video>
+        <VideoPlayer videoUid="62e6bee45de24df96cecefae" />
 
         <form onSubmit={handleSubmit(onSubmit)}>
             <input name="file" type="file" {...register('file')} />

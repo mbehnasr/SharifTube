@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import {SessionProvider} from "next-auth/react";
+// import "video-react/dist/video-react.css";
 
 function App({ Component, pageProps }) {
   return (
