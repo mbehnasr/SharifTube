@@ -5,7 +5,7 @@ import {SessionProvider} from "next-auth/react";
 function App({ Component, pageProps }) {
   return (
       <SessionProvider session={pageProps.session}>
-        {/*{pageProps.forbidden ? <Forbidden/> : <Component {...pageProps}/>}*/}
+        {/*{pageProps.forbidden ? <ForbiddenError/> : <Component {...pageProps}/>}*/}
         <Component {...pageProps}/>
       </SessionProvider>
   )

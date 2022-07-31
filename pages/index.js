@@ -7,7 +7,6 @@ import axios from "axios";
 import {VideoPlayer} from "../components/video";
 
 export default function Home() {
-  const videoUid= "62e6bee45de24df96cecefae"
   const {register, handleSubmit, errors} = useForm();
     const onSubmit = data => {
         console.log("submitting");
@@ -39,7 +38,7 @@ export default function Home() {
 
         <p className={styles.description}>
           Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
+          <code className={styles.code}>pages/stream.js</code>
         </p>
 
         <div className={styles.grid}>

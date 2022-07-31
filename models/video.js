@@ -15,6 +15,10 @@ const CommentSchema = new mongoose.Schema({
     },
     content: {
         type: String,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
     }
 })
 
@@ -51,6 +55,10 @@ const VideoSchema = new mongoose.Schema({
         type: [CommentSchema],
         default: [],
     },
+    likes: {
+        type: [mongoose.Schema.Types.ObjectId],
+        default: [],
+    }
 })
 
 VideoSchema.methods = {
@@ -61,5 +69,13 @@ VideoSchema.methods = {
         return `${this._id}.${this.posterExtension}`
     }
 }
+
+VideoSchema.index({
+    title: 'text', description: 'text', "comments.content": 'text',
+}, {
+    weights: {
+        title: 5, description: 3, "comments.content": 1,
+    }
+})
 
 export default mongoose.models.Video || mongoose.model('Video', VideoSchema);

@@ -13,7 +13,7 @@ import {
 export function VideoPlayer({ videoUid }) {
     return (
         <Player
-            src={`/api/videos/${videoUid}`}
+            src={`/api/videos/${videoUid}/stream`}
             poster={`/api/videos/${videoUid}/poster`}>
             <BigPlayButton position="center" />
             <LoadingSpinner />
