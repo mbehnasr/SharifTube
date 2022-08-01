@@ -10,11 +10,9 @@ import {
     VolumeMenuButton
 } from "video-react";
 
-export function VideoPlayer({ videoUid }) {
+export function VideoPlayer(props) {
     return (
-        <Player
-            src={`/api/videos/${videoUid}/stream`}
-            poster={`/api/videos/${videoUid}/poster`}>
+        <Player {...props}>
             <BigPlayButton position="center" />
             <LoadingSpinner />
             <ControlBar autoHide>

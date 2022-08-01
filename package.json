@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
+    "bootstrap": "^5.2.0",
     "busboy": "^1.6.0",
     "get-video-duration": "^4.1.0",
     "mongoose": "^6.5.0",
@@ -19,8 +22,10 @@
     "next-auth": "^4.10.2",
     "next-connect": "^0.13.0",
     "react": "^17.0.2",
+    "react-bootstrap": "^2.4.0",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.34.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "video-react": "^0.15.0"
   },
   "devDependencies": {
