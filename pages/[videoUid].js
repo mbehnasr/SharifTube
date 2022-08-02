@@ -9,13 +9,25 @@ import Head from "next/head";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import {css} from "@emotion/react";
+import {userLightDto} from "../models/dtos/user";
+import {useForm} from "react-hook-form";
 
 const COMMENTS_PAGE_SIZE = 10;
 
-export default function VideoPage({uid, src, poster, videoInfo}) {
+const likeButtonTemplate = css`
+  background-color: transparent;
+  border: none;
+`
+
+export default function VideoPage({uid, src, poster, videoInfo, user}) {
     const [comments, setComments] = useState([]);
     const [hasMoreComments, setHasMoreComments] = useState(true);
     const [commentsPage, setCommentsPage] = useState(0);
+    const [theVideoInfo, setTheVideoInfo] = useState(videoInfo);
+    const {register, handleSubmit} = useForm();
 
     const getMoreComments = () => {
         axios.get(`/api/videos/${uid}/comments`, {
@@ -31,6 +43,23 @@ export default function VideoPage({uid, src, poster, videoInfo}) {
         })
     }
 
+    const onAddComment = data => {
+        axios.post(`/api/videos/${uid}/comments`, data)
+            .then(res => setComments([res.data].concat(comments)))
+    }
+
+    const getLikeButton = () => {
+        return <button css={likeButtonTemplate} disabled={!user} onClick={() => axios.post(`/api/videos/${uid}/likes`).then(res => setTheVideoInfo(res.data))}>
+            <FavoriteBorderIcon />
+        </button>
+    }
+
+    const getDislikeButton = () => {
+        return <button css={likeButtonTemplate} disabled={!user} onClick={() => axios.delete(`/api/videos/${uid}/likes`).then(res => setTheVideoInfo(res.data))}>
+            <FavoriteIcon />
+        </button>
+    }
+
     useEffect(() => {
         getMoreComments();
     }, []);
@@ -38,16 +67,24 @@ export default function VideoPage({uid, src, poster, videoInfo}) {
     return (
         <Layout>
             <Head>
-                <title>{videoInfo.title}</title>
+                <title>{theVideoInfo.title}</title>
             </Head>
             <VideoPlayer src={src} poster={poster}/>
-            <h1>{videoInfo.title}</h1>
-            <p>{videoInfo.description}</p>
+            <div className="m-2">
+                {theVideoInfo.liked ? getDislikeButton() : getLikeButton()}
+                {theVideoInfo.likes}
+            </div>
+            <h1>{theVideoInfo.title}</h1>
+            <p>{theVideoInfo.description}</p>
             <Card className="d-flex flex-row justify-content-between p-2 align-items-center">
-                <h4 className="m-0">{videoInfo.user.username}</h4>
+                <h4 className="m-0">{theVideoInfo.user.username}</h4>
                 <Button variant="danger">subscribe</Button>
             </Card>
             <h4 className="mt-4">comments</h4>
+            {user && <form onSubmit={handleSubmit(onAddComment)}>
+                <textarea className="form-control" {...register('text')} />
+                <button className="btn" type="submit">add comment</button>
+            </form>}
             <InfiniteScroll
                 dataLength={comments.length}
                 next={getMoreComments}
@@ -75,12 +112,14 @@ export async function getServerSideProps(context) {
     await db();
     const video = await Video.findById(videoUid);
     if (!video) return {notFound: true};
+    const user = await getUser(context);
     return {
         props: {
             uid: videoUid,
+            user: user && userLightDto(user),
             src: `/api/videos/${videoUid}/stream`,
             poster: `/api/videos/${videoUid}/poster`,
-            videoInfo: videoFullDto(video, await getUser(context)),
+            videoInfo: videoFullDto(video, user),
         }
     }
 }

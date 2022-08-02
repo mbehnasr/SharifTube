@@ -7,3 +7,11 @@ export function userSerializer(token) {
         roles: token.roles,
     };
 }
+
+export function userLightDto(user) {
+    return {
+        uid: user._id.toString(),
+        username: user.username,
+        roles: user.roles,
+    }
+}

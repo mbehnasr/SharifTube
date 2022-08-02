@@ -74,7 +74,7 @@ VideoSchema.index({
     title: 'text', description: 'text', "comments.content": 'text',
 }, {
     weights: {
-        title: 5, description: 3, "comments.content": 1,
+        title: 9, description: 6, "comments.content": 1,
     }
 })
 

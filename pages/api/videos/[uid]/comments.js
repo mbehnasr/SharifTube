@@ -5,7 +5,7 @@ import {authMiddleware} from "../../../../lib/auth";
 import Video from "../../../../models/video";
 import {commentLightDto} from "../../../../models/dtos/comment";
 
-const handler = nc({onError})
+const handler = nc({})
     .use(connectDBMiddleware)
     .get(async (req, res) => {
         const video = await Video.findById(req.query.uid);
@@ -27,7 +27,8 @@ const handler = nc({onError})
         }
         video.comments.push(comment);
         await video.save();
-        res.status(201).json(comment);
+        const newComment = video.comments.slice(-1)[0];
+        res.status(201).json(commentLightDto(newComment));
     });
 
 export default handler;
