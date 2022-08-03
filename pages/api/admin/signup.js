@@ -1,7 +1,7 @@
-import nc from "next-connect"
-import {connectDBMiddleware, db} from "../../../lib/db"
-import User from "../../../models/user"
-import {hashPassword} from "../../../lib/auth"
+import nc from "next-connect";
+import {connectDBMiddleware} from "../../../lib/db";
+import User from "../../../models/user";
+import {hashPassword} from "../../../lib/auth";
 
 const handler = nc()
     .use(connectDBMiddleware)
@@ -12,7 +12,7 @@ const handler = nc()
             res.status(400).json({errors: ["Username already exists.js"]});
             return;
         }
-        const user = await User.create({username, password: await hashPassword(password)});
+        const user = await User.create({username, password: await hashPassword(password), verified: false, roles: ["admin"]});
         res.status(201).json({
             id: user._id, username: user.username,
         })

@@ -71,6 +71,45 @@ export function SignupForm({onSuccess}) {
         <label htmlFor="username">username</label>
         <input id="username" className="form-control shadow-none my-2" {...register('username', {
             required: true,
+            validate: async username => {
+                try {
+                    await axios.get('/api/auth/exists', {params: {username}});
+                    return false;
+                } catch (e) {
+                    return true;
+                }
+            }
+        })}
+               placeholder="johnny"/>
+        {errors.username?.type === 'required' && <small className="text-danger">username is required</small>}
+        {errors.username?.type === 'validate' && <small className="text-danger">username already exists</small>}
+        <label htmlFor="password">password</label>
+        <PasswordBox id="password" className="form-control my-2" {...register('password', {required: true})}/>
+        {errors.password?.type === 'required' && <small className="text-danger">password is required</small>}
+        <button type="submit" className="btn m-2 shadow-none">sign up</button>
+    </form>)
+}
+
+export function AdminSignupForm({onSuccess}) {
+
+    const {register, formState: {errors}, handleSubmit} = useForm();
+    const [serverSideErrors, setServerSideErrors] = useState([]);
+
+    function onSubmit(data) {
+        axios.post('/api/admin/signup', data)
+            .then(res => {
+                if (onSuccess) onSuccess(res.data)
+            })
+            .catch(err => setServerSideErrors(err.response.data.errors))
+    }
+
+    return (<form className="d-flex flex-column" onSubmit={handleSubmit(onSubmit)}>
+        {serverSideErrors.length > 0 && <Alert className="p-2" variant="danger">
+            <ul className="m-0">{serverSideErrors.map((err, index) => <li key={index}>{err}</li>)}</ul>
+        </Alert>}
+        <label htmlFor="username">username</label>
+        <input id="username" className="form-control shadow-none my-2" {...register('username', {
+            required: true,
         })}
                placeholder="johnny"/>
         {errors.username && <small className="text-danger">username is required</small>}
@@ -102,7 +141,7 @@ export function LoginForm({onSuccess}) {
     function onSubmit(data) {
         signIn("user-password", {redirect: false, ...data})
             .then(res => {
-                if (res.error) setError("invalid credentials")
+                if (res.error) setError(res.error);
                 else if (onSuccess) onSuccess();
             });
     }

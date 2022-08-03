@@ -58,6 +58,10 @@ const VideoSchema = new mongoose.Schema({
     likes: {
         type: [mongoose.Schema.Types.ObjectId],
         default: [],
+    },
+    visible: {
+        type: Boolean,
+        default: true,
     }
 })
 

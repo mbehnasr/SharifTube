@@ -18,6 +18,9 @@ export default NextAuth({
                 if (!user || !(await verifyPassword(password, user.password))) {
                     throw new Error("Invalid credentials");
                 }
+                if (user.roles.includes("admin") && !user.verified) {
+                    throw new Error("Admin not verified");
+                }
                 return user;
             }
         })

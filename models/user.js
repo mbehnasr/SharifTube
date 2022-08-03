@@ -14,6 +14,9 @@ const UserSchema = new mongoose.Schema({
         type: [String],
         default: ['user'],
     },
+    verified: {
+        type: Boolean,
+    },
 })
 
 export default mongoose.models.User || mongoose.model('User', UserSchema)
