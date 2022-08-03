@@ -21,6 +21,9 @@ export default NextAuth({
                 if (user.roles.includes("admin") && !user.verified) {
                     throw new Error("Admin not verified");
                 }
+                if (user.roles.includes("user") && user.strike) {
+                    throw new Error("User is banned");
+                }
                 return user;
             }
         })

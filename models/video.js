@@ -62,6 +62,9 @@ const VideoSchema = new mongoose.Schema({
     visible: {
         type: Boolean,
         default: true,
+    },
+    extraTags: {
+        type: [String],
     }
 })
 

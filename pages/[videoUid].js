@@ -111,7 +111,7 @@ export async function getServerSideProps(context) {
     const {videoUid} = context.params;
     await db();
     const video = await Video.findById(videoUid);
-    if (!video) return {notFound: true};
+    if (!video || !video.visible) return {notFound: true};
     const user = await getUser(context);
     return {
         props: {

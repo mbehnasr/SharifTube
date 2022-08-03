@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema({
     verified: {
         type: Boolean,
     },
+    strike: {
+        type: Boolean,
+    }
 })
 
 export default mongoose.models.User || mongoose.model('User', UserSchema)
