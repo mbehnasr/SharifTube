@@ -1,7 +1,14 @@
 import {getUser} from "../../lib/auth";
+import {Container} from "react-bootstrap";
+import {AdminTabs} from "../../components/auth/tabs";
 
 export default function AdminPanelPage() {
-    return (<h1>Admin panel</h1>)
+
+    return (
+        <Container className="mt-2">
+            <AdminTabs />
+        </Container>
+    );
 }
 
 export async function getServerSideProps(context) {

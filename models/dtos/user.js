@@ -15,3 +15,11 @@ export function userLightDto(user) {
         roles: user.roles,
     }
 }
+
+export function userAdminDto(user) {
+    return {
+        uid: user._id.toString(),
+        username: user.username,
+        strike: user.strike,
+    }
+}
