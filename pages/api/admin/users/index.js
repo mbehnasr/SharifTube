@@ -10,10 +10,16 @@ const handler = nc({onError})
     .use(authMiddleware('admin'))
     .get(async (req, res) => {
         const username = req.query.username;
-        if (!username) throw new BadRequestError("username is required");
-        const user = await User.findOne({username, roles: {$not: {$in: ['admin', 'manager']}}});
-        if (!user) throw new NotFoundError("user not found or you are not allowed to view user details");
-        res.status(200).json(userAdminDto(user));
+        const excludeRoles = ['manager'];
+        if (!req.user.roles.includes('manager')) excludeRoles.push('admin');
+        if (username) {
+                const user = await User.findOne({username, roles: {$not: {$in: excludeRoles}}});
+                if (!user) throw new NotFoundError("user not found or you are not allowed to view user details");
+                res.status(200).json(userAdminDto(user));
+        } else {
+            const users = await User.find({roles: {$not: {$in: excludeRoles}}});
+            res.status(200).json(users.map(user => userAdminDto(user)));
+        }
     });
 
 export default handler;

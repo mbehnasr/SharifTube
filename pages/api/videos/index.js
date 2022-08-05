@@ -6,6 +6,7 @@ import {authMiddleware, strikeAuthMiddleware, withUser} from "../../../lib/auth"
 import {connectDBMiddleware} from "../../../lib/db";
 import {getVideoPath} from "../../../utils/path";
 import {videoFullDto} from "../../../models/dtos/video";
+import {Role} from "../../../models/user";
 
 const handler = nc()
     .use(connectDBMiddleware)
@@ -18,7 +19,7 @@ const handler = nc()
         const videos = await Video.find(search).skip(start).limit(limit);
         res.status(200).json(videos.map(v => videoFullDto(v, req.user)));
     })
-    .post(strikeAuthMiddleware('user'), async (req, res) => {
+    .post(strikeAuthMiddleware(Role.USER), async (req, res) => {
         const bb = busboy({headers: req.headers});
         let newVideo;
         bb.on("file", async (_, file, info) => {

@@ -21,5 +21,7 @@ export function userAdminDto(user) {
         uid: user._id.toString(),
         username: user.username,
         strike: user.strike,
+        verified: user.verified,
+        roles: user.roles,
     }
 }

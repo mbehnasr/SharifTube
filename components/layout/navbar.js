@@ -3,7 +3,7 @@ import {Button, Modal, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {signOut} from "next-auth/react";
 import Link from "next/link";
 import {useContext, useState} from "react";
-import {AuthTabs} from "../auth/tabs";
+import {AuthTabs, TicketTabs} from "../auth/tabs";
 import {useRouter} from "next/router";
 import {useEffect} from "react";
 import {css} from "@emotion/react";
@@ -62,9 +62,14 @@ export function UserNavBar() {
     const user = useUser();
 
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showTicketModal, setShowTicketModal] = useState(false);
 
     function handleHideLoginModal() {
         setShowLoginModal(false);
+    }
+
+    function handleHideTicketModal() {
+        setShowTicketModal(false);
     }
 
     return <>
@@ -84,6 +89,10 @@ export function UserNavBar() {
                             <Button variant="outline-danger" className="shadow-none m-1">Upload a video</Button>
                         </Link>
                     )}
+                    {user &&
+                        <Button variant="outline-success" className="shadow-none m-1" onClick={() => setShowTicketModal(true)}>
+                            Submit a ticket
+                        </Button>}
                 </Nav>
                 <Nav>
                     <SearchBox />
@@ -94,6 +103,12 @@ export function UserNavBar() {
             <Modal.Header closeButton/>
             <Modal.Body>
                 <AuthTabs onSuccess={handleHideLoginModal}/>
+            </Modal.Body>
+        </Modal>
+        <Modal show={showTicketModal} onHide={handleHideTicketModal}>
+            <Modal.Header closeButton/>
+            <Modal.Body>
+                <TicketTabs />
             </Modal.Body>
         </Modal>
     </>

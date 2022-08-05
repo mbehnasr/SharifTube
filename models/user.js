@@ -1,5 +1,11 @@
 import mongoose from 'mongoose'
 
+export const Role = {
+    USER: 'user',
+    ADMIN: 'admin',
+    MANAGER: 'manager',
+}
+
 const UserSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -12,7 +18,7 @@ const UserSchema = new mongoose.Schema({
     },
     roles: {
         type: [String],
-        default: ['user'],
+        default: [Role.USER],
     },
     verified: {
         type: Boolean,

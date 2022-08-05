@@ -1,11 +1,11 @@
-import {InputGroup, Form, Button, Alert, ListGroup} from "react-bootstrap";
+import {InputGroup, Form, Button, Alert, ListGroup, Row} from "react-bootstrap";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
+import useSWR from "swr";
 
 function ExtraTag({tag, video}) {
     const [checked, setChecked] = useState(false);
     useEffect(() => {
-        console.log(video);
         if (video.uid) {
             if (checked) {
                 axios.post(`/api/admin/videos/${video.uid}/tags`, {tag}).then();
@@ -70,7 +70,6 @@ export function VideosDetail() {
                     <b>Uid:</b> {video.uid}
                 </ListGroup.Item>
                 <ListGroup.Item>
-                    {/*<b>Extra Tags:</b> {video.extraTags?.map(tag => <Badge key={tag} pill bg="warning" >{tag}</Badge>)}*/}
                     <b>Extra Tags:</b>
                     <ExtraTag tag="restrictions" video={video}/>
                     <ExtraTag tag="dangerous" video={video}/>
@@ -92,20 +91,29 @@ export function VideosDetail() {
 
 export function UsersDetail() {
     const [user, setUser] = useState({});
+    // const [users, setUsers] = useState([]);
     const [err, setErr] = useState('');
     const usernameRef = useRef();
-    const onSubmit = (e) => {
-        e.preventDefault();
+    const {data: users} = useSWR('/api/admin/users', async () => (await axios.get('/api/admin/users')).data);
+
+    const setUserByUsername = (username) => {
         axios.get('/api/admin/users', {
-            params: {
-                username: usernameRef.current.value
-            }
+            params: {username}
         }).then(res => {
             setUser(res.data);
             setErr('');
         }).catch(err => {
             setErr(err.response.data.message);
         })
+    }
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        if (usernameRef.current.value) {
+            setUserByUsername(usernameRef.current.value);
+        } else {
+            setErr('Please enter a username');
+        }
     }
     return (
         <div>
@@ -127,26 +135,49 @@ export function UsersDetail() {
                     />
                 </InputGroup>
             </Form>
-            <h3>User Details</h3>
-            <hr/>
-            <ListGroup variant="flush">
-                <ListGroup.Item>
-                    <b>Uid:</b> {user.uid}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                    <b>Username:</b> {user.username}
-                </ListGroup.Item>
-                <ListGroup.Item className="d-flex align-items-center">
-                    <b>Strike:</b> {user.strike ? 'Yes' : 'No'}
-                    {user.strike && <Button className="ms-auto" variant="danger" onClick={() => {
-                        axios.delete(`/api/admin/users/${user.uid}/strike`).then(res => {
-                            setUser(res.data);
-                        }).catch(err => {
-                            setErr(err.response.data.message);
-                        })
-                    }}>disable strike</Button>}
-                </ListGroup.Item>
-            </ListGroup>
+            <Row>
+                <div className="col-12 col-md-6">
+                    <h3>User Details</h3>
+                    <hr/>
+                    <ListGroup variant="flush">
+                        <ListGroup.Item>
+                            <b>Uid:</b> {user.uid}
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                            <b>Username:</b> {user.username}
+                        </ListGroup.Item>
+                        {user.roles?.includes('user') && <ListGroup.Item className="d-flex align-items-center">
+                            <b>Strike:</b> {user.strike ? 'Yes' : 'No'}
+                            {user.strike && <Button className="ms-auto" variant="danger" onClick={() => {
+                                axios.delete(`/api/admin/users/${user.uid}/strike`).then(res => {
+                                    setUser(res.data);
+                                }).catch(err => {
+                                    setErr(err.response.data.message);
+                                })
+                            }}>disable strike</Button>}
+                        </ListGroup.Item>}
+                        {user.roles?.includes('admin') && <ListGroup.Item className="d-flex align-items-center">
+                            <b>Verified:</b> {user.verified ? 'Yes' : 'No'}
+                            {!user.verified && <Button className="ms-auto" variant="success" onClick={() => {
+                                axios.post(`/api/admin/users/${user.uid}/verify`).then(res => {
+                                    setUser(res.data);
+                                }).catch(err => {
+                                    setErr(err.response.data.message);
+                                })
+                            }}>verify admin</Button>}
+                        </ListGroup.Item>}
+                    </ListGroup>
+                </div>
+                <div className="col-12 col-md-6">
+                    <ListGroup variant="flush">
+                        {users && users.map(user => (
+                            <ListGroup.Item key={user.uid} className="cursor-pointer" onClick={() => setUserByUsername(user.username)}>
+                                {user.username}
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                </div>
+            </Row>
         </div>
     );
 }
