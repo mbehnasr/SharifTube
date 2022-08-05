@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
     },
     strike: {
         type: Boolean,
+        default: false,
     }
 })
 

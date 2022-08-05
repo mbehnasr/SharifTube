@@ -2,7 +2,7 @@ import nc from "next-connect";
 import busboy from "busboy";
 import fs from "fs";
 import Video from "../../../models/video";
-import {authMiddleware, withUser} from "../../../lib/auth";
+import {authMiddleware, strikeAuthMiddleware, withUser} from "../../../lib/auth";
 import {connectDBMiddleware} from "../../../lib/db";
 import {getVideoPath} from "../../../utils/path";
 import {videoFullDto} from "../../../models/dtos/video";
@@ -18,7 +18,7 @@ const handler = nc()
         const videos = await Video.find(search).skip(start).limit(limit);
         res.status(200).json(videos.map(v => videoFullDto(v, req.user)));
     })
-    .post(authMiddleware('user'), async (req, res) => {
+    .post(strikeAuthMiddleware('user'), async (req, res) => {
         const bb = busboy({headers: req.headers});
         let newVideo;
         bb.on("file", async (_, file, info) => {

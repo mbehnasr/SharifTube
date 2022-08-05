@@ -82,7 +82,7 @@ export function VideoCard({video, className}) {
                     {Math.floor(video.duration / 60)}:{video.duration % 60}
                 </Badge>
                 <Card.Body>
-                    <Card.Title>{video.title}</Card.Title>
+                    <Card.Title><Link href={`/${video.uid}`} passHref><a>{video.title}</a></Link></Card.Title>
                     <Card.Text>
                         {video.description}
                     </Card.Text>

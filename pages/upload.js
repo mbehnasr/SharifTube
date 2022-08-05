@@ -5,6 +5,7 @@ import {useState} from "react";
 import axios from "axios";
 import {useRouter} from "next/router";
 import {css} from "@emotion/react";
+import {getFullUser} from "../lib/auth";
 
 const gridTemplate = css`
     display: grid;
@@ -69,4 +70,18 @@ export default function UploadPage() {
             </form>
         </Layout>
     )
+}
+
+export async function getServerSideProps(context) {
+    const user = await getFullUser(context);
+    if (!user) return {
+        redirect: {
+            destination: '/login?redirect=upload',
+            permanent: false
+        }
+    }
+    if (user.strike) return { props: { forbidden: true } }
+    return {
+        props: {}
+    }
 }

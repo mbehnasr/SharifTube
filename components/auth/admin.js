@@ -3,9 +3,59 @@ import {useRef, useState} from "react";
 import axios from "axios";
 
 export function VideosDetail() {
+    const [video, setVideo] = useState({});
+    const [err, setErr] = useState('');
+    const videoUidRef = useRef();
+    const onSubmit = (e) => {
+        e.preventDefault();
+        axios.get('/api/admin/videos', {
+            params: {
+                uid: videoUidRef.current.value
+            }
+        }).then(res => {
+            setVideo(res.data);
+            setErr('');
+        }).catch(err => {
+            setErr(err.response.data.message);
+        })
+    }
     return (
         <div>
-            <h1>Videos Detail</h1>
+            {err && <Alert variant="danger">{err}</Alert>}
+            <Form onSubmit={onSubmit}>
+                <InputGroup>
+                    <InputGroup.Text id="btnGroupAddon">#</InputGroup.Text>
+                    <Form.Control
+                        ref={videoUidRef}
+                        className="shadow-none"
+                        type="text"
+                        placeholder="Search by video uid"
+                        aria-describedby="btnGroupAddon"
+                    />
+                    <Form.Control
+                        className="shadow-none"
+                        type="submit"
+                        value="Search"
+                    />
+                </InputGroup>
+            </Form>
+            <h3>Video Details</h3>
+            <hr/>
+            <ListGroup variant="flush">
+                <ListGroup.Item>
+                    <b>Uid:</b> {video.uid}
+                </ListGroup.Item>
+                <ListGroup.Item className="d-flex align-items-center">
+                    <b>Visible:</b> {video.visible ? 'Yes' : 'No'}
+                    {video.visible && <Button className="ms-auto" variant="danger" onClick={() => {
+                        axios.delete(`/api/admin/videos/${video.uid}`).then(res => {
+                            setVideo(res.data);
+                        }).catch(err => {
+                            setErr(err.response.data.message);
+                        })
+                    }}>Make unavailable</Button>}
+                </ListGroup.Item>
+            </ListGroup>
         </div>
     );
 }
@@ -47,7 +97,7 @@ export function UsersDetail() {
                     />
                 </InputGroup>
             </Form>
-            <h3>Users Details</h3>
+            <h3>User Details</h3>
             <hr/>
             <ListGroup variant="flush">
                 <ListGroup.Item>
@@ -56,9 +106,9 @@ export function UsersDetail() {
                 <ListGroup.Item>
                     <b>Username:</b> {user.username}
                 </ListGroup.Item>
-                <ListGroup.Item>
+                <ListGroup.Item className="d-flex align-items-center">
                     <b>Strike:</b> {user.strike ? 'Yes' : 'No'}
-                    {user.strike && <Button variant="danger" onClick={() => {
+                    {user.strike && <Button className="ms-auto" variant="danger" onClick={() => {
                         axios.delete(`/api/admin/users/${user.uid}/strike`).then(res => {
                             setUser(res.data);
                         }).catch(err => {

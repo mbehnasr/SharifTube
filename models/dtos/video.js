@@ -13,3 +13,20 @@ export function videoFullDto(video, user) {
         duration: video.duration,
     }
 }
+
+export function videoAdminDto(video) {
+    return {
+        uid: video._id.toString(),
+        title: video.title,
+        description: video.description,
+        createdAt: video.createdAt.toJSON(),
+        user: {
+            uid: video.user._id.toString(),
+            username: video.user.username,
+        },
+        likes: video.likes.length,
+        duration: video.duration,
+        visible: video.visible,
+        extraTags: video.extraTags,
+    }
+}
