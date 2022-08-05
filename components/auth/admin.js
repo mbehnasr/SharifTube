@@ -1,6 +1,30 @@
 import {InputGroup, Form, Button, Alert, ListGroup} from "react-bootstrap";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
+
+function ExtraTag({tag, video}) {
+    const [checked, setChecked] = useState(false);
+    useEffect(() => {
+        console.log(video);
+        if (video.uid) {
+            if (checked) {
+                axios.post(`/api/admin/videos/${video.uid}/tags`, {tag}).then();
+            } else {
+                axios.delete(`/api/admin/videos/${video.uid}/tags`, {params: {tag}}).then();
+            }
+        }
+    }, [checked]);
+    useEffect(() => {
+        if (video.extraTags?.includes(tag)) {
+            setChecked(true);
+        } else {
+            setChecked(false);
+        }
+    }, [video]);
+    return (
+        <Form.Check onChange={() => setChecked(!checked)} type="checkbox" label={tag} checked={checked}/>
+    )
+}
 
 export function VideosDetail() {
     const [video, setVideo] = useState({});
@@ -44,6 +68,12 @@ export function VideosDetail() {
             <ListGroup variant="flush">
                 <ListGroup.Item>
                     <b>Uid:</b> {video.uid}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    {/*<b>Extra Tags:</b> {video.extraTags?.map(tag => <Badge key={tag} pill bg="warning" >{tag}</Badge>)}*/}
+                    <b>Extra Tags:</b>
+                    <ExtraTag tag="restrictions" video={video}/>
+                    <ExtraTag tag="dangerous" video={video}/>
                 </ListGroup.Item>
                 <ListGroup.Item className="d-flex align-items-center">
                     <b>Visible:</b> {video.visible ? 'Yes' : 'No'}

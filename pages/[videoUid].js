@@ -4,7 +4,7 @@ import Video from "../models/video";
 import {videoFullDto} from "../models/dtos/video";
 import {getUser} from "../lib/auth";
 import {db} from "../lib/db";
-import {Button, Card} from "react-bootstrap";
+import {Badge, Button, Card} from "react-bootstrap";
 import Head from "next/head";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {useEffect, useState} from "react";
@@ -75,6 +75,9 @@ export default function VideoPage({uid, src, poster, videoInfo, user}) {
                 {theVideoInfo.likes}
             </div>
             <h1>{theVideoInfo.title}</h1>
+            <div>
+                {theVideoInfo.extraTags.length && theVideoInfo.extraTags.map(tag => <Badge key={tag} className="m-1" variant="secondary">{tag}</Badge>)}
+            </div>
             <p>{theVideoInfo.description}</p>
             <Card className="d-flex flex-row justify-content-between p-2 align-items-center">
                 <h4 className="m-0">{theVideoInfo.user.username}</h4>

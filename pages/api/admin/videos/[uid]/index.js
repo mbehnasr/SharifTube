@@ -1,10 +1,10 @@
 import nc from "next-connect";
-import {authMiddleware} from "../../../../lib/auth";
-import {NotFoundError, onError} from "../../../../lib/error";
-import {connectDBMiddleware} from "../../../../lib/db";
-import {videoAdminDto} from "../../../../models/dtos/video";
-import User from "../../../../models/user";
-import Video from "../../../../models/video";
+import {authMiddleware} from "../../../../../lib/auth";
+import {NotFoundError, onError} from "../../../../../lib/error";
+import {connectDBMiddleware} from "../../../../../lib/db";
+import {videoAdminDto} from "../../../../../models/dtos/video";
+import User from "../../../../../models/user";
+import Video from "../../../../../models/video";
 
 const handler = nc({onError})
     .use(connectDBMiddleware)
