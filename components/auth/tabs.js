@@ -1,8 +1,9 @@
-import {useState} from "react";
-import {Tab, Tabs, Row, Col, Nav} from "react-bootstrap";
+import {useEffect, useState} from "react";
+import {Tab, Tabs, Row, Col, Nav, ListGroup, Badge, Form, Button} from "react-bootstrap";
 import {LoginForm, SignupForm} from "./form";
-import {UsersDetail, VideosDetail} from "./admin";
+import {DetailsView, UsersDetail, VideosDetail} from "./admin";
 import {NewTicketForm, TicketList, TicketView} from "../ticket";
+import axios from "axios";
 
 export function AuthTabs({onSuccess}) {
     const [key, setKey] = useState("login");
@@ -24,9 +25,50 @@ export function AuthTabs({onSuccess}) {
     )
 }
 
-export function AdminTabs() {
-    const [key, setKey] = useState("videos");
+function TicketDetails({item}) {
+    const [ticket, setTicket] = useState(item);
+    const [answer, setAnswer] = useState(ticket.answer);
+    const [status, setStatus] = useState(ticket.status);
 
+    useEffect(() => {
+        setTicket(item);
+    }, [item]);
+
+    const onSubmit = e => {
+        e.preventDefault();
+        axios.put(`/api/admin/tickets/${ticket.uid}`, {
+            answer,
+            status,
+        }).then(res => {
+            setTicket(res.data);
+        });
+    }
+    return (
+        <Form onSubmit={onSubmit}>
+            <h4>{ticket.title}</h4>
+            <h6>Content</h6>
+            <hr/>
+            <p>{ticket.content}</p>
+            <h6>Answer</h6>
+            <hr/>
+            <Form.Control as="textarea" name="answer" value={answer} onChange={e => setAnswer(e.target.value)}/>
+            <b>Status: </b>
+            <Form.Select value={status} onChange={e => setStatus(e.target.value)}>
+                <option value="new">New</option>
+                <option value="in_progress">In progress</option>
+                <option value="solved">Solved</option>
+                <option value="closed">Closed</option>
+            </Form.Select>
+            <br/>
+            <b>Created At: </b>
+            <span>{ticket.createdAt}</span>
+            <br/>
+            <Button type="submit" variant="primary">Save</Button>
+        </Form>
+    )
+}
+
+export function AdminTabs() {
     return (
         <Tab.Container id="left-tabs-example" defaultActiveKey="videos">
             <Row>
@@ -42,15 +84,38 @@ export function AdminTabs() {
                                 Users
                             </Nav.Link>
                         </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="tickets" href="#">
+                                Tickets
+                            </Nav.Link>
+                        </Nav.Item>
                     </Nav>
                 </Col>
                 <Col sm={9}>
                     <Tab.Content>
                         <Tab.Pane eventKey="videos">
-                            <VideosDetail />
+                            <VideosDetail/>
                         </Tab.Pane>
                         <Tab.Pane eventKey="users">
-                            <UsersDetail />
+                            <UsersDetail/>
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="tickets">
+                            <DetailsView title="Ticket" endpoint="/api/admin/tickets" searchKey="uid"
+                                         Items={({items: tickets, onSelect}) => {
+                                             return (
+                                                 <ListGroup variant="flush">
+                                                     {tickets && tickets.map(ticket => (
+                                                         <ListGroup.Item key={ticket.uid} className="cursor-pointer"
+                                                                         onClick={() => onSelect(ticket)}>
+                                                             <div className="d-flex justify-content-between">
+                                                                 {ticket.title}
+                                                                 <Badge variant="secondary">{ticket.status}</Badge>
+                                                             </div>
+                                                         </ListGroup.Item>
+                                                     ))}
+                                                 </ListGroup>
+                                             )
+                                         }} Details={TicketDetails}/>
                         </Tab.Pane>
                     </Tab.Content>
                 </Col>
@@ -71,7 +136,7 @@ export function TicketTabs() {
             className="mb-3"
         >
             <Tab eventKey="new" title="new ticket" tabClassName="text-red preserve-color">
-                <NewTicketForm eventKey={key} />
+                <NewTicketForm eventKey={key}/>
             </Tab>
             <Tab eventKey="list" title="my tickets" tabClassName="text-red preserve-color">
                 {ticket && <TicketView uid={ticket.uid}/>}

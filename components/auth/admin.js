@@ -2,6 +2,7 @@ import {InputGroup, Form, Button, Alert, ListGroup, Row} from "react-bootstrap";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import useSWR from "swr";
+import SearchIcon from '@mui/icons-material/Search';
 
 function ExtraTag({tag, video}) {
     const [checked, setChecked] = useState(false);
@@ -171,11 +172,111 @@ export function UsersDetail() {
                 <div className="col-12 col-md-6">
                     <ListGroup variant="flush">
                         {users && users.map(user => (
-                            <ListGroup.Item key={user.uid} className="cursor-pointer" onClick={() => setUserByUsername(user.username)}>
+                            <ListGroup.Item key={user.uid} className="cursor-pointer"
+                                            onClick={() => setUserByUsername(user.username)}>
                                 {user.username}
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
+                </div>
+            </Row>
+        </div>
+    );
+}
+
+function getDefaultItemsComponent(title, searchKey) {
+    const component = ({items, onSelect}) => {
+        return (
+            <ListGroup variant="flush">
+                {items && items.map(item => (
+                    <ListGroup.Item key={item[searchKey]} className="cursor-pointer" onClick={() => onSelect(item)}>
+                        {item[searchKey]}
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
+        )
+    };
+    component.displayName = `Default${title}ItemsComponent`;
+    return component;
+}
+
+function getDefaultDetailsComponent(title) {
+    const component = ({item}) => {
+        return (
+            <ListGroup variant="flush">
+                {Object.entries(item).map(([key, value]) => (
+                    <ListGroup.Item key={key}>
+                        <b>{key}: </b> {value}
+                    </ListGroup.Item>
+                    )
+                )}
+            </ListGroup>
+        )
+    };
+    component.displayName = `Default${title}DetailsComponent`;
+    return component;
+}
+
+export function DetailsView({
+                                title,
+                                endpoint,
+                                searchKey,
+                                Items = getDefaultItemsComponent(title, searchKey),
+                                Details = getDefaultDetailsComponent(title, searchKey)
+                            }) {
+    const [currentObject, setCurrentObject] = useState(null);
+    const [err, setErr] = useState('');
+    const searchRef = useRef();
+    const {data: objects} = useSWR(endpoint, async (url) => (await axios.get(url)).data);
+
+    const setCurrentObjectBySearchKey = searchValue => {
+        axios.get(`${endpoint}/${searchValue}`).then(res => {
+            setCurrentObject(res.data);
+            setErr('');
+        }).catch(err => {
+            setErr(err.response.data.message);
+        })
+    }
+
+    const onSearch = e => {
+        e.preventDefault();
+        if (searchRef.current.value) {
+            setCurrentObjectBySearchKey(searchRef.current.value);
+        } else {
+            setErr(`Please enter a ${searchKey}`);
+        }
+    }
+
+    return (
+        <div>
+            {err && <Alert variant="danger">{err}</Alert>}
+            <Form onSubmit={onSearch}>
+                <InputGroup>
+                    <InputGroup.Text id="btnGroupAddon">
+                        <SearchIcon />
+                    </InputGroup.Text>
+                    <Form.Control
+                        ref={searchRef}
+                        className="shadow-none"
+                        type="text"
+                        placeholder={`Search by ${searchKey}`}
+                        aria-describedby="btnGroupAddon"
+                    />
+                    <Form.Control
+                        className="shadow-none"
+                        type="submit"
+                        value="Search"
+                    />
+                </InputGroup>
+            </Form>
+            <Row>
+                <div className="col-12 col-md-6">
+                    <Items items={objects} onSelect={item => setCurrentObjectBySearchKey(item[searchKey])}/>
+                </div>
+                <div className="col-12 col-md-6">
+                    <h3>{title} Details</h3>
+                    <hr/>
+                    {!!currentObject && <Details item={currentObject}/>}
                 </div>
             </Row>
         </div>
