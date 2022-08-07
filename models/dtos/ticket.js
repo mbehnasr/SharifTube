@@ -15,6 +15,7 @@ export function ticketFullDto(ticket) {
         answer: ticket.answer,
         createdAt: ticket.createdAt.toJSON(),
         status: ticket.status,
+        hasAttachment: ticket.hasAttachment(),
     }
 }
 
@@ -42,6 +43,7 @@ export function ticketAdminFullDto(ticket) {
         user: {
             uid: ticket.user._id.toString(),
             username: ticket.user.username
-        }
+        },
+        hasAttachment: ticket.hasAttachment(),
     }
 }

@@ -1,9 +1,9 @@
 import nc from "next-connect";
-import {ForbiddenError, NotFoundError, onError} from "../../../lib/error";
-import {connectDBMiddleware} from "../../../lib/db";
-import {authMiddleware} from "../../../lib/auth";
-import Ticket from "../../../models/ticket";
-import {ticketFullDto} from "../../../models/dtos/ticket";
+import {ForbiddenError, NotFoundError, onError} from "../../../../lib/error";
+import {connectDBMiddleware} from "../../../../lib/db";
+import {authMiddleware} from "../../../../lib/auth";
+import Ticket from "../../../../models/ticket";
+import {ticketFullDto} from "../../../../models/dtos/ticket";
 
 const handler = nc({onError})
     .use(connectDBMiddleware)

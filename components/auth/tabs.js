@@ -4,6 +4,7 @@ import {LoginForm, SignupForm} from "./form";
 import {DetailsView, UsersDetail, VideosDetail} from "./admin";
 import {NewTicketForm, TicketList, TicketView} from "../ticket";
 import axios from "axios";
+import Link from "next/link";
 
 export function AuthTabs({onSuccess}) {
     const [key, setKey] = useState("login");
@@ -29,6 +30,12 @@ function TicketDetails({item}) {
     const [ticket, setTicket] = useState(item);
     const [answer, setAnswer] = useState(ticket.answer);
     const [status, setStatus] = useState(ticket.status);
+    const [attachment, setAttachment] = useState(null);
+
+    const handleSetAttachment = e => {
+        const files = e.target.files;
+        if (files?.length) setAttachment(files[0]);
+    }
 
     useEffect(() => {
         setTicket(item);
@@ -36,10 +43,11 @@ function TicketDetails({item}) {
 
     const onSubmit = e => {
         e.preventDefault();
-        axios.put(`/api/admin/tickets/${ticket.uid}`, {
-            answer,
-            status,
-        }).then(res => {
+        const formData = new FormData();
+        formData.append('answer', answer);
+        formData.append('status', status);
+        if (attachment) formData.append('attachment', attachment);
+        axios.patch(`/api/admin/tickets/${ticket.uid}`, formData).then(res => {
             setTicket(res.data);
         });
     }
@@ -59,6 +67,9 @@ function TicketDetails({item}) {
                 <option value="solved">Solved</option>
                 <option value="closed">Closed</option>
             </Form.Select>
+            <b>Attachment: </b>
+            <Link href={`/api/tickets/${ticket.uid}/attachment`} passHref><Button className="m-2" disabled={!ticket.hasAttachment}>download</Button></Link>
+            <Form.Control type="file" name="attachment" onChange={handleSetAttachment} />
             <br/>
             <b>Created At: </b>
             <span>{ticket.createdAt}</span>

@@ -2,6 +2,7 @@ import {useForm} from "react-hook-form";
 import {Button, Form, ListGroup} from "react-bootstrap";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import Link from "next/link";
 
 export function TicketView({uid}) {
     const [ticket, setTicket] = useState({});
@@ -14,14 +15,20 @@ export function TicketView({uid}) {
         <div>
             <h3>{ticket.title}</h3>
             <h6>Content</h6>
-            <hr />
+            <hr/>
             <p>{ticket.content}</p>
             <h6>Answer</h6>
-            <hr />
+            <hr/>
             <p>{ticket.answer}</p>
+            {ticket.hasAttachment && <>
+                <h6>Attachment</h6>
+                <hr/>
+                <Link href={`/api/tickets/${ticket.uid}/attachment`} passHref><Button className="m-2" disabled={!ticket.hasAttachment}>download</Button></Link>
+            </>}
+            <br/>
             <b>Status: </b>
             {ticket.status}
-            <br />
+            <br/>
             <b>Created At: </b>
             {ticket.createdAt}
         </div>

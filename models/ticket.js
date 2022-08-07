@@ -39,7 +39,22 @@ const TicketSchema = new mongoose.Schema({
     },
     activeRole: {
         type: String,
-    }
+    },
+    fileName: {
+        type: String,
+    },
+    fileExtension: {
+        type: String,
+    },
 })
+
+TicketSchema.methods = {
+    hasAttachment() {
+        return Boolean(this.fileName && this.fileExtension);
+    },
+    getFullAttachmentName() {
+        return `${this._id.toString()}.${this.fileExtension}`;
+    }
+}
 
 export default mongoose.models.Ticket || mongoose.model('Ticket', TicketSchema);
