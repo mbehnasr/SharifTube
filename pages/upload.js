@@ -6,6 +6,7 @@ import axios from "axios";
 import {useRouter} from "next/router";
 import {css} from "@emotion/react";
 import {getFullUser} from "../lib/auth";
+import {db} from "../lib/db";
 
 const gridTemplate = css`
     display: grid;
@@ -73,6 +74,7 @@ export default function UploadPage() {
 }
 
 export async function getServerSideProps(context) {
+    await db();
     const user = await getFullUser(context);
     if (!user) return {
         redirect: {
