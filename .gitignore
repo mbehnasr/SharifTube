@@ -34,3 +34,4 @@ yarn-error.log*
 # static files
 /public/uploads/
 /public/posters/
+/public/attachments/
