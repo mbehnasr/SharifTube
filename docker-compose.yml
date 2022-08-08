@@ -1,0 +1,13 @@
+services:
+  stube:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/stube/public/uploads:/app/public/uploads
+      - ./data/stube/public/posters:/app/public/posters
+      - ./data/stube/public/attachments:/app/public/attachments
+  mongo:
+    image: mongo
+    volumes:
+      - ./data/mongo:/data/db
