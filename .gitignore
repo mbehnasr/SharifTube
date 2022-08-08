@@ -35,3 +35,6 @@ yarn-error.log*
 /public/uploads/
 /public/posters/
 /public/attachments/
+
+# mount points
+/data/

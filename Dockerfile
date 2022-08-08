@@ -22,6 +22,7 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npm run build
+RUN cp -r /app/node_modules/@ffprobe-installer /app/.next/standalone/node_modules/
 
 # If using npm comment out above and use below instead
 # RUN npm run build
