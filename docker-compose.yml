@@ -8,6 +8,6 @@ services:
       - ./data/stube/public/posters:/app/public/posters
       - ./data/stube/public/attachments:/app/public/attachments
   mongo:
-    image: mongo
+    image: "mongo:4.4.6"
     volumes:
       - ./data/mongo:/data/db
