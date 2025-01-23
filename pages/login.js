@@ -10,7 +10,7 @@ export default function LoginPage() {
     return (
         <Layout className="shadow py-2 d-flex flex-column justify-content-center align-items-center">
             <Head>
-                <title>SharifTube - Login</title>
+                <title>zeinali - Login</title>
             </Head>
             <h1>Login</h1>
             <p>Please login to continue</p>

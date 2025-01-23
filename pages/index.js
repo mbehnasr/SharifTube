@@ -36,8 +36,8 @@ export default function Home() {
     return (
         <Layout>
             <Head>
-                <title>SharifTube</title>
-                <meta name="description" content="Sharif University Video Sharing System"/>
+                <title>zeinali</title>
+                <meta name="description" content="zeinali Video Sharing System"/>
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <InfiniteScroll
